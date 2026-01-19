@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel Booking</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='static.css') }}">
+</head>
+<body>
+    <!-- Header Section -->
+    <header>
+        <h1>Welcome to Our Hotel Booking System</h1>
+    </header>
+
+    <!-- Hero Image -->
+    <section class="hero">
+        <img src="{{ url_for('static', filename='pictures/hotel_main.jpg.png') }}" alt="Hotel Image" class="hero-img">
+        <p>Find the best rooms at affordable prices. Book your stay with us today!</p>
+    </section>
+
+    <!-- Navigation Bar -->
+    <nav class="main-nav">
+        <a href="{{ url_for('login') }}">Login</a>
+        <a href="{{ url_for('signup') }}">Signup</a>
+        <a href="{{ url_for('booking') }}">Book Now</a>
+    </nav>
+
+    <!-- Removed Rooms Section -->
+</body>
+</html>

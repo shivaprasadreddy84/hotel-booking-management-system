@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Hotel Booking</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='static.css') }}">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: url('{{ url_for('static', filename='pictures/hotel_main.jpg.png') }}') no-repeat center center/cover;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #333;
+        }
+
+        .dashboard-container {
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 40px 50px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            width: 90%;
+            max-width: 800px;
+            margin-top: 50px;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            text-align: center;
+            color: #007bff;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #333;
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+            font-weight: 500;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .no-bookings {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 16px;
+        }
+
+        .buttons {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .buttons a {
+            display: inline-block;
+            margin: 8px;
+            padding: 12px 20px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        .buttons a:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <h1>Welcome, {{ username }} 👋</h1>
+        <h2>Your Bookings</h2>
+
+        {% if bookings %}
+        <table>
+            <tr>
+                <th>Room Type</th>
+                <th>Check-In</th>
+                <th>Check-Out</th>
+                <th>Total Amount (₹)</th>
+            </tr>
+            {% for booking in bookings %}
+            <tr>
+                <td>{{ booking[0] }}</td>
+                <td>{{ booking[1] }}</td>
+                <td>{{ booking[2] }}</td>
+                <td>{{ booking[3] if booking|length > 3 else '-' }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+            <p class="no-bookings">No bookings yet. <a href="{{ url_for('booking') }}">Book Now</a></p>
+        {% endif %}
+
+        <div class="buttons">
+            <a href="{{ url_for('booking') }}">Book Another Room</a>
+            <a href="{{ url_for('index') }}">Home</a>
+            <a href="{{ url_for('login') }}">Logout</a>
+        </div>
+    </div>
+</body>
+</html>

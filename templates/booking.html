@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Room - Hotel Booking</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='static.css') }}">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: url('{{ url_for('static', filename='pictures/hotel_main.jpg.png') }}') no-repeat center center/cover;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        h1, h2 {
+            color: #333;
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .room-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 20px 0;
+            gap: 20px;
+        }
+
+        .room-card {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 15px;
+            width: 270px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: transform 0.2s ease;
+        }
+
+        .room-card:hover {
+            transform: scale(1.03);
+        }
+
+        .room-card img {
+            width: 100%;
+            height: 160px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .book-btn {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        .book-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .booking-form {
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 30px 40px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            width: 90%;
+            max-width: 400px;
+            margin: 40px 0;
+        }
+
+        label {
+            font-weight: 500;
+            display: block;
+            margin-bottom: 6px;
+            color: #333;
+        }
+
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 18px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            outline: none;
+            font-size: 16px;
+        }
+
+        input:focus, select:focus {
+            border: 1px solid #007bff;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: 0.3s;
+            font-weight: 500;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        a.back-home {
+            margin: 20px 0;
+            text-decoration: none;
+            color: #007bff;
+            font-weight: 500;
+        }
+
+        a.back-home:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>Book Your Room</h1>
+
+    {% if not request.args.get('room') %}
+        <!-- Room selection view -->
+        <div class="room-container">
+            <div class="room-card">
+                <img src="{{ url_for('static', filename='pictures/single_room.jpg') }}" alt="Single Room">
+                <h3>Single Room</h3>
+                <p>Perfect for one guest — ₹2500/night</p>
+                <a href="{{ url_for('booking', room='Single') }}" class="book-btn">Book Now</a>
+            </div>
+
+            <div class="room-card">
+                <img src="{{ url_for('static', filename='pictures/double_room.jpg') }}" alt="Double Room">
+                <h3>Double Room</h3>
+                <p>Ideal for two guests — ₹4000/night</p>
+                <a href="{{ url_for('booking', room='Double') }}" class="book-btn">Book Now</a>
+            </div>
+
+            <div class="room-card">
+                <img src="{{ url_for('static', filename='pictures/dulex_room.jpg') }}" alt="Deluxe Room">
+                <h3>Deluxe Room</h3>
+                <p>Luxury stay — ₹6000/night</p>
+                <a href="{{ url_for('booking', room='Deluxe') }}" class="book-btn">Book Now</a>
+            </div>
+        </div>
+    {% else %}
+        <!-- Booking form -->
+        <div class="booking-form">
+            <h2>Booking Form for {{ request.args.get('room') }} Room</h2>
+            <form method="POST" action="{{ url_for('booking') }}" oninput="calculateAmount()">
+                <input type="hidden" id="roomType" name="room_type" value="{{ request.args.get('room') }}">
+
+                <label>Check-in Date:</label>
+                <input type="date" id="checkIn" name="check_in" required>
+
+                <label>Check-out Date:</label>
+                <input type="date" id="checkOut" name="check_out" required>
+
+                <label>Total Amount (₹):</label>
+                <input type="text" id="amount" name="amount" readonly placeholder="Auto-calculated">
+
+                <button type="submit">Confirm Booking</button>
+            </form>
+        </div>
+    {% endif %}
+
+    <a href="{{ url_for('index') }}" class="back-home">← Back to Home</a>
+
+    <script>
+    function calculateAmount() {
+        const checkIn = new Date(document.getElementById('checkIn').value);
+        const checkOut = new Date(document.getElementById('checkOut').value);
+        const roomType = document.getElementById('roomType').value;
+        const amountField = document.getElementById('amount');
+
+        let pricePerNight = 0;
+        if (roomType === 'Single') pricePerNight = 2500;
+        else if (roomType === 'Double') pricePerNight = 4000;
+        else if (roomType === 'Deluxe') pricePerNight = 6000;
+
+        if (checkIn && checkOut && checkOut > checkIn) {
+            const diffTime = checkOut - checkIn;
+            const nights = diffTime / (1000 * 60 * 60 * 24);
+            const total = nights * pricePerNight;
+            amountField.value = total.toFixed(2);
+        } else {
+            amountField.value = '';
+        }
+    }
+    </script>
+</body>
+</html>
+ 
